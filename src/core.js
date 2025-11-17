@@ -15,6 +15,7 @@ import {
   cloneObject,
   createElement,
   DOMReady,
+  findEditorInstances,
   findInstance,
   getInstanceId,
   getTargetElements,
@@ -141,16 +142,14 @@ function configure(instance, options) {
  * @param {string} selector One or more selectors pointing to textarea fields.
  */
 function destroy(selector) {
-  document.querySelectorAll(selector).forEach(field => {
-    const sibling = field.previousElementSibling;
+  const editorInstances = findEditorInstances(selector);
 
-    if (sibling && hasClass(sibling, 'wysi-wrapper')) {
-      const instanceId = getInstanceId(sibling.lastChild);
+  for (const editorInstance of editorInstances) {
+    const { instanceId, wrapper } = editorInstance;
 
-      delete instances[instanceId];
-      sibling.remove();
-    }
-  });
+    delete instances[instanceId];
+    wrapper.remove();
+  }
 }
 
 /**

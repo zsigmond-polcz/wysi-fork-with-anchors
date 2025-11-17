@@ -113,6 +113,29 @@ export function findDeepestChildNode(node) {
 }
 
 /**
+ * Find WYSIWYG editor instances.
+ * @param {string} selector One or more selectors pointing to textarea fields.
+ */
+export function findEditorInstances(selector) {
+  const editorInstances = [];
+
+  getTargetElements(selector).forEach(textarea => {
+    const wrapper = textarea.previousElementSibling;
+
+    if (wrapper && hasClass(wrapper, 'wysi-wrapper')) {
+      const children = wrapper.children;
+      const toolbar = children[0];
+      const editor = children[1];
+      const instanceId = getInstanceId(editor);
+
+      editorInstances.push({ textarea, wrapper, toolbar, editor, instanceId });
+    }
+  });
+
+  return editorInstances;
+}
+
+/**
  * Find the current editor instance.
  * @param {object} currentNode The possible child node of the editor instance.
  * @return {object} The instance's editable region and toolbar, and an array of nodes that lead to it.
