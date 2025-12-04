@@ -318,6 +318,19 @@ addListener(document, 'click', '.wysi-popover > button', event => {
   event.stopImmediatePropagation();
 });
 
+// On key press on the popover button
+addListener(document, 'keydown', '.wysi-popover > button', event => {
+  switch (event.key) {
+    case 'ArrowUp':
+    case 'ArrowDown':
+    case 'Enter':
+    case ' ':
+      openPopover(event.target);
+      event.preventDefault();
+      break;
+  }
+});
+
 // Execute the popover action
 addListener(document, 'click', '.wysi-popover > div > button[data-action]', event => {
   execPopoverAction(event.target);
