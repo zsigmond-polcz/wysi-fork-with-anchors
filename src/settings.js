@@ -11,7 +11,7 @@ export default {
       label: 'Text alignment',
       items: ['alignLeft', 'alignCenter', 'alignRight', 'alignJustify']
     }, '|',
-    'ul', 'ol', '|', 'indent', 'outdent', '|', 'link', 'image'
+    'ul', 'ol', '|', 'indent', 'outdent', '|', 'link', 'image', '|', 'anchor'
   ],
 
   // Enable dark mode (toolbar only)

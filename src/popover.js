@@ -68,6 +68,21 @@ function renderPopover(toolName, button) {
     }
   });
 
+  // Anchor popover
+  if (toolName === 'anchor') {
+    // The anchor popover needs a "Remove anchor" button
+    const extraTool = 'removeAnchor';
+    const label = getTranslation(toolName, toolset[extraTool].label);
+
+    popover.appendChild(createElement('button', {
+      type: 'button',
+      title: label,
+      'aria-label': label,
+      'data-action': extraTool,
+      _innerHTML: `<svg><use href="#wysi-delete"></use></svg>`
+    }));
+  }
+
   // Link popover
   if (toolName === 'link') {
     // Add the target attribute
@@ -173,10 +188,30 @@ function openPopover(button) {
   const anchorNode = selection.anchorNode;
   const { editor, nodes } = findInstance(anchorNode);
   const values = {};
+  const action = button.dataset.action;
 
   if (editor) {
+    // Anchor popover: pre-fill with the existing anchor id in the current block
+    if (action === 'anchor') {
+      let block = anchorNode instanceof Element ? anchorNode : anchorNode && anchorNode.parentElement;
+
+      while (block && !['P', 'H1', 'H2', 'H3', 'H4', 'BLOCKQUOTE', 'LI'].includes(block.tagName)) {
+        block = block.parentElement;
+      }
+
+      if (block) {
+        const existingAnchor = block.querySelector('a[id]:not([href])');
+        if (existingAnchor) {
+          values['id'] = existingAnchor.id;
+        }
+      }
+
+      if (selection && editor.contains(anchorNode) && selection.rangeCount) {
+        setCurrentSelection(selection.getRangeAt(0));
+      }
+
+    } else {
     // Try to find an existing target of the popover's action from the DOM selection
-    const action = button.dataset.action;
     const tool = toolset[action];
     let target = editor.querySelector(`.${selectedClass}`);
     let selectContents = false;
@@ -233,6 +268,7 @@ function openPopover(button) {
       // Save the current selection to keep track of where to insert the content
       setCurrentSelection(selection.getRangeAt(0));
     }
+    } // end of non-anchor branch
   }
 
   // Populate the input fields with the existing values if any
@@ -279,7 +315,12 @@ function execPopoverAction(button) {
   });
 
   // Workaround for links being removed when updating images
-  if (action === 'image') {
+  if (action === 'anchor' || action === 'removeAnchor') {
+    // restore selection so execAction can find the right block
+    restoreSelection();
+    execAction(action, editor, options);
+    return;
+  } else if (action === 'image') {
     const selected = editor.querySelector(`.${selectedClass}`);
     const parent = selected ? selected.parentNode : {};
 

@@ -214,6 +214,20 @@ function updateToolbarState() {
         }
     }    
   });
+
+  // Highlight the anchor button if the current block contains an anchor placeholder
+  const anchorButton = toolbar.querySelector('[data-action="anchor"]');
+  if (anchorButton) {
+    let block = anchorNode instanceof Element ? anchorNode : anchorNode && anchorNode.parentElement;
+
+    while (block && !['P', 'H1', 'H2', 'H3', 'H4', 'BLOCKQUOTE', 'LI'].includes(block.tagName)) {
+      block = block.parentElement;
+    }
+
+    if (block && block.querySelector('a[id]:not([href])')) {
+      anchorButton.setAttribute('aria-pressed', 'true');
+    }
+  }
 }
 
 /**

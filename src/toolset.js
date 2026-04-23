@@ -1,5 +1,12 @@
 // Supported tools
 export default {
+  anchor: {
+    tags: ['a'],
+    attributes: ['id'],
+    attributeLabels: ['Anchor ID'],
+    hasForm: true,
+    label: 'Anchor'
+  },
   format: {
     tags: ['p', 'h1', 'h2', 'h3', 'h4'],
     styles: ['text-align'],
@@ -154,5 +161,8 @@ export default {
   },
   unlink: {
     label: 'Remove link'
+  },
+  removeAnchor: {
+    label: 'Remove anchor'
   }
 };

@@ -1,3 +1,4 @@
+import document from 'document';
 import toolset from './toolset.js';
 import { restoreSelection } from './utils.js';
 import { execCommand } from './shortcuts.js';
@@ -38,6 +39,54 @@ export function execEditorCommand(command, options) {
     case 'format':
       execCommand('formatBlock', `<${options[0]}>`);
       break;
+
+    // Anchors
+    case 'anchor': {
+      const [anchorId] = options;
+      if (!anchorId) break;
+
+      // Find the block-level element containing the current selection
+      const selection = document.getSelection();
+      const anchorNode = selection && selection.anchorNode;
+      let block = anchorNode instanceof Element ? anchorNode : anchorNode && anchorNode.parentElement;
+
+      while (block && !['P', 'H1', 'H2', 'H3', 'H4', 'BLOCKQUOTE', 'LI'].includes(block.tagName)) {
+        block = block.parentElement;
+      }
+
+      if (!block) break;
+
+      // Remove any existing anchor placeholder inside the block
+      const existing = block.querySelector('a[id]:not([href])');
+      if (existing) {
+        existing.replaceWith(...existing.childNodes);
+      }
+
+      // Insert the new anchor as an empty <a id="..."> at the start of the block
+      const anchor = document.createElement('a');
+      anchor.id = anchorId;
+      block.insertBefore(anchor, block.firstChild);
+      break;
+    }
+
+    // Remove anchor
+    case 'removeAnchor': {
+      const selection = document.getSelection();
+      const anchorNode = selection && selection.anchorNode;
+      let block = anchorNode instanceof Element ? anchorNode : anchorNode && anchorNode.parentElement;
+
+      while (block && !['P', 'H1', 'H2', 'H3', 'H4', 'BLOCKQUOTE', 'LI'].includes(block.tagName)) {
+        block = block.parentElement;
+      }
+
+      if (!block) break;
+
+      const existing = block.querySelector('a[id]:not([href])');
+      if (existing) {
+        existing.replaceWith(...existing.childNodes);
+      }
+      break;
+    }
 
     // Links
     case 'link':

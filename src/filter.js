@@ -30,8 +30,18 @@ function enableTags(tools) {
     const styles = tool.styles || [];
 
     tags.forEach(tag => {
-      allowedTags[tag] = { attributes, styles, alias, isEmpty };
-      
+      if (allowedTags[tag]) {
+        // Merge attributes and styles if the tag is already registered by another tool
+        const existingAttributes = allowedTags[tag].attributes || [];
+        const existingStyles = allowedTags[tag].styles || [];
+        allowedTags[tag].attributes = [...new Set([...existingAttributes, ...attributes])];
+        allowedTags[tag].styles = [...new Set([...existingStyles, ...styles])];
+        allowedTags[tag].isEmpty = allowedTags[tag].isEmpty || isEmpty;
+        if (alias) allowedTags[tag].alias = alias;
+      } else {
+        allowedTags[tag] = { attributes, styles, alias, isEmpty };
+      }
+
       if (!extraTags.includes(tag)) {
         allowedTags[tag].toolName = toolName;
       }

@@ -12,15 +12,14 @@
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-replace": "^5.0.2",
     "@rollup/plugin-terser": "^1.0.0",
-    "caniuse-lite": "^1.0.30001472",
     "gulp": "^5.0.0",
     "gulp-clean-css": "^4.3.0",
     "gulp-rename": "^2.0.0",
     "rollup": "^3.29.5"
   },
   "scripts": {
-    "build": "gulp build",
-    "watch": "gulp"
+    "build": "node --require ./crypto-polyfill.cjs node_modules/.bin/gulp build",
+    "watch": "node --require ./crypto-polyfill.cjs node_modules/.bin/gulp"
   },
   "browserslist": "> 0.25%, not dead",
   "babel": {
