@@ -21,6 +21,12 @@ export function execAction(action, editor, options = []) {
     // Execute the tool's action
     execEditorCommand(command, options);
 
+    // Anchor mutations are direct DOM changes that don't fire an input event,
+    // so we dispatch one manually to make updateContent write to the textarea.
+    if (command === 'anchor' || command === 'removeAnchor') {
+      editor.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
     // Focus the editor instance
     editor.focus();
   }

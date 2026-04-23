@@ -579,6 +579,14 @@
       // Execute the tool's action
       execEditorCommand(command, options);
 
+      // Anchor mutations are direct DOM changes that don't fire an input event,
+      // so we dispatch one manually to make updateContent write to the textarea.
+      if (command === 'anchor' || command === 'removeAnchor') {
+        editor.dispatchEvent(new Event('input', {
+          bubbles: true
+        }));
+      }
+
       // Focus the editor instance
       editor.focus();
     }
@@ -1785,7 +1793,10 @@
         // Check if the element can be empty
         const tag = childNode.tagName.toLowerCase();
         const allowedTag = allowedTags[tag];
-        if (allowedTag && !allowedTag.isEmpty && trimText(childNode.innerHTML) === '') {
+
+        // Preserve empty anchor placeholders (<a id="..." > with no href)
+        const isAnchorPlaceholder = tag === 'a' && childNode.hasAttribute('id') && !childNode.hasAttribute('href');
+        if (allowedTag && !allowedTag.isEmpty && !isAnchorPlaceholder && trimText(childNode.innerHTML) === '') {
           node.removeChild(childNode);
         }
       }
